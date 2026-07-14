@@ -1,0 +1,12 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-release/cmake_install.cmake",
+		"C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-release/core/cmake_install.cmake",
+		"C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-release/capture/cmake_install.cmake",
+		"C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-release/processing/cmake_install.cmake",
+		"C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-release/network/cmake_install.cmake",
+		"C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-release/control/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

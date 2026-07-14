@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "logging": {
+    "level": "info"
+  },
+  "capture": {
+    "source": "simulation",
+    "queue_capacity": 8,
+    "simulation": {
+      "video_path": "C:\\Workspaces\\VisualStudio\\projects\\anpr\\docs\\dataset\\archive\\plates-picture-dataset\\782.jpg",
+      "realtime": true,
+      "target_fps": 0,
+      "frame_skip": 0,
+      "loop": true,
+      "start_time_seconds": 0
+    },
+    "camera": {
+      "rtsp_url": "rtsp://user:password@192.168.1.64:554/Streaming/Channels/101",
+      "transport": "tcp",
+      "reconnect_interval_seconds": 5.0
+    }
+  },
+  "processing": {
+    "active_model_profile": "generic",
+    "dedup_window_seconds": 10,
+    "queue_capacity": 32,
+    "process_every_n_frames": 3,
+    "num_threads": 4,
+    "max_frame_width": 1920,
+    "model_profiles": {
+      "generic": {
+        "engine": "opencv_dnn",
+        "detection": {
+          "model_path": "models/plate_detect_yolov8n.onnx",
+          "input_width": 640,
+          "input_height": 640,
+          "confidence_threshold": 0.35,
+          "nms_threshold": 0.45,
+          "preprocess": {
+            "color_order": "RGB",
+            "channels": 3,
+            "layout": "nchw",
+            "scale": 0.00392156862745098,
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "std": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        "ocr": {
+          "model_path": "models/plate_ocr_global_vit_v2.onnx",
+          "input_width": 140,
+          "input_height": 70,
+          "confidence_threshold": 0.6,
+          "charset_path": "models/charset_global.txt",
+          "pad_char": "_",
+          "preprocess": {
+            "color_order": "BGR",
+            "channels": 1,
+            "layout": "nhwc",
+            "scale": 1.0,
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "std": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      },
+      "turkish_finetuned": {
+        "engine": "opencv_dnn",
+        "detection": {
+          "model_path": "models/plate_detect_tr_v1.onnx",
+          "input_width": 640,
+          "input_height": 640,
+          "confidence_threshold": 0.55,
+          "nms_threshold": 0.45,
+          "preprocess": {
+            "color_order": "RGB",
+            "scale": 0.00392156862745098,
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "std": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        "ocr": {
+          "model_path": "models/plate_ocr_tr_v1.onnx",
+          "input_width": 160,
+          "input_height": 32,
+          "confidence_threshold": 0.65,
+          "charset_path": "models/charset_tr.txt",
+          "preprocess": {
+            "color_order": "RGB",
+            "scale": 0.00392156862745098,
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "std": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      }
+    }
+  },
+  "display": {
+    "enabled": true,
+    "max_width": 1280
+  },
+  "network": {
+    "enabled": true,
+    "server_host": "127.0.0.1",
+    "server_port": 9000,
+    "reconnect_interval_seconds": 5.0,
+    "send_queue_capacity": 256
+  }
+}

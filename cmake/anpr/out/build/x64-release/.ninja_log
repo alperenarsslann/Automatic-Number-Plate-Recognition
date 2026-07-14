@@ -1,0 +1,15 @@
+# ninja log v7
+30	3945	8057553483118448	CMakeFiles/anpr.dir/anpr.cpp.obj	2502abd32f155cbc
+3948	5811	8057553522291881	anpr.exe	40c20b94293ccb44
+48	3565	8057713228555367	core/CMakeFiles/anpr_core.dir/src/Logger.cpp.obj	8fe816662bf1169b
+87	4286	8057713228944292	capture/CMakeFiles/anpr_capture.dir/src/HikvisionRtspFrameSource.cpp.obj	a5d570443539cb6b
+98	4293	8057713229051277	capture/CMakeFiles/anpr_capture.dir/src/FrameSourceFactory.cpp.obj	348e02f67c9751c2
+122	4778	8057713229301274	processing/CMakeFiles/anpr_processing.dir/src/PlateRecognizerFactory.cpp.obj	c3fc5b12f760c75b
+111	5645	8057713229181291	processing/CMakeFiles/anpr_processing.dir/src/OpenCvDnnPlateRecognizer.cpp.obj	cdb19176fce2b92a
+77	5933	8057713228849087	capture/CMakeFiles/anpr_capture.dir/src/SimulatedFileFrameSource.cpp.obj	f7eb869669a43b1
+131	6287	8057713229391285	control/CMakeFiles/anpr.dir/src/main.cpp.obj	66da93385901b36b
+66	7750	8057713228746726	core/CMakeFiles/anpr_core.dir/src/Config.cpp.obj	92b283d43afb7545
+7751	7838	8057713305590561	core/anpr_core.lib	f27921411845831d
+7847	7916	8057713306548214	processing/anpr_processing.lib	5c7c38219e8f92d3
+7838	7916	8057713306458218	capture/anpr_capture.lib	a330b8a8b049ee14
+7917	9426	8057713307246712	control/anpr.exe	20946d6b86745601

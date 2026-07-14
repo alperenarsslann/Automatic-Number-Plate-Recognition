@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyTitle>ANPR Studio</AssemblyTitle>
+    <Description>Test and configuration companion for the ANPR embedded pipeline.</Description>
+  </PropertyGroup>
+
+</Project>

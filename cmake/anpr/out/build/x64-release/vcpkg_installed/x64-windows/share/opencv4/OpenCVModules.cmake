@@ -36,6 +36,8 @@ if(ANDROID)
   find_dependency(CpuFeaturesNdkCompat CONFIG)
 endif()
 find_dependency(flatbuffers CONFIG)
+find_dependency(FFMPEG)
+find_dependency(OpenCL CONFIG)
 find_dependency(quirc)
 find_dependency(TIFF)
 

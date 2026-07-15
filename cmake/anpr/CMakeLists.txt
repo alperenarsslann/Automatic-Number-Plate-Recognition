@@ -24,6 +24,7 @@ find_package(OpenCV CONFIG REQUIRED)
 message(STATUS "OpenCV ${OpenCV_VERSION} found at: ${OpenCV_DIR}")
 
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(httplib CONFIG REQUIRED)
 
 find_package(Threads REQUIRED)
 

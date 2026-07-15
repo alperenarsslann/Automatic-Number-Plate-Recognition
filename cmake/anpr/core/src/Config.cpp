@@ -1,6 +1,7 @@
 #include "core/Config.h"
 
 #include <fstream>
+#include <set>
 #include <stdexcept>
 
 #include <nlohmann/json.hpp>
@@ -58,8 +59,28 @@ void readOcrModel(const json& j, OcrModelConfig& cfg) {
     if (j.contains("preprocess")) readPreprocess(j.at("preprocess"), cfg.preprocess);
 }
 
+void readVehicleModel(const json& j, VehicleModelConfig& cfg) {
+    readIfPresent(j, "enabled", cfg.enabled);
+    readIfPresent(j, "model_path", cfg.modelPath);
+    readIfPresent(j, "input_width", cfg.inputWidth);
+    readIfPresent(j, "input_height", cfg.inputHeight);
+    readIfPresent(j, "confidence_threshold", cfg.confidenceThreshold);
+    readIfPresent(j, "nms_threshold", cfg.nmsThreshold);
+    readIfPresent(j, "class_ids", cfg.classIds);
+    readIfPresent(j, "roi_expand", cfg.roiExpand);
+    if (j.contains("preprocess")) readPreprocess(j.at("preprocess"), cfg.preprocess);
+}
+
 void readModelProfile(const json& j, ModelProfile& profile) {
     readIfPresent(j, "engine", profile.engine);
+    readIfPresent(j, "dnn_backend", profile.dnnBackend);
+    static const std::set<std::string> kBackends = {"cpu", "opencl", "opencl_fp16", "cuda",
+                                                    "cuda_fp16"};
+    if (!kBackends.count(profile.dnnBackend)) {
+        throw std::runtime_error("unknown dnn_backend \"" + profile.dnnBackend +
+                                 "\" (expected cpu, opencl, opencl_fp16, cuda or cuda_fp16)");
+    }
+    if (j.contains("vehicle_detection")) readVehicleModel(j.at("vehicle_detection"), profile.vehicle);
     if (j.contains("detection")) readDetectionModel(j.at("detection"), profile.detection);
     if (j.contains("ocr")) readOcrModel(j.at("ocr"), profile.ocr);
 }
@@ -75,8 +96,31 @@ void readSimulation(const json& j, SimulationConfig& cfg) {
 
 void readCamera(const json& j, CameraConfig& cfg) {
     readIfPresent(j, "rtsp_url", cfg.rtspUrl);
+    readIfPresent(j, "substream_url", cfg.substreamUrl);
     readIfPresent(j, "transport", cfg.transport);
     readIfPresent(j, "reconnect_interval_seconds", cfg.reconnectIntervalSeconds);
+}
+
+void readMotion(const json& j, MotionConfig& cfg) {
+    readIfPresent(j, "enabled", cfg.enabled);
+    readIfPresent(j, "downscale_width", cfg.downscaleWidth);
+    readIfPresent(j, "min_area_fraction", cfg.minAreaFraction);
+    readIfPresent(j, "cooldown_seconds", cfg.cooldownSeconds);
+}
+
+void readCameraInstance(const json& j, CameraInstanceConfig& cfg) {
+    readIfPresent(j, "id", cfg.id);
+    readIfPresent(j, "name", cfg.name);
+    readIfPresent(j, "enabled", cfg.enabled);
+    readIfPresent(j, "alpr_enabled", cfg.alprEnabled);
+    readIfPresent(j, "source", cfg.source);
+    if (cfg.source != "simulation" && cfg.source != "camera") {
+        throw std::runtime_error("camera \"" + cfg.id +
+                                 "\": source must be \"simulation\" or \"camera\"");
+    }
+    if (j.contains("simulation")) readSimulation(j.at("simulation"), cfg.simulation);
+    if (j.contains("camera")) readCamera(j.at("camera"), cfg.camera);
+    if (j.contains("motion")) readMotion(j.at("motion"), cfg.motion);
 }
 
 void readCapture(const json& j, CaptureConfig& cfg) {
@@ -97,6 +141,10 @@ void readProcessing(const json& j, ProcessingConfig& cfg) {
     readIfPresent(j, "process_every_n_frames", cfg.processEveryNFrames);
     readIfPresent(j, "num_threads", cfg.numThreads);
     readIfPresent(j, "max_frame_width", cfg.maxFrameWidth);
+    readIfPresent(j, "worker_count", cfg.workerCount);
+    if (cfg.workerCount < 1 || cfg.workerCount > 16) {
+        throw std::runtime_error("processing.worker_count must be between 1 and 16");
+    }
     if (cfg.processEveryNFrames < 1) {
         throw std::runtime_error("processing.process_every_n_frames must be >= 1");
     }
@@ -146,9 +194,45 @@ AppConfig AppConfig::loadFromFile(const std::string& path) {
         readIfPresent(j, "version", cfg.version);
         if (j.contains("logging")) readIfPresent(j.at("logging"), "level", cfg.logging.level);
         if (j.contains("capture")) readCapture(j.at("capture"), cfg.capture);
+        if (j.contains("cameras")) {
+            for (const auto& item : j.at("cameras")) {
+                CameraInstanceConfig cam;
+                readCameraInstance(item, cam);
+                if (cam.id.empty()) {
+                    cam.id = "cam" + std::to_string(cfg.cameras.size() + 1);
+                }
+                if (cam.name.empty()) cam.name = cam.id;
+                cfg.cameras.push_back(std::move(cam));
+            }
+            if (cfg.cameras.size() > 64) {
+                throw std::runtime_error("at most 64 cameras are supported, got " +
+                                         std::to_string(cfg.cameras.size()));
+            }
+            std::set<std::string> ids;
+            for (const auto& cam : cfg.cameras) {
+                if (!ids.insert(cam.id).second) {
+                    throw std::runtime_error("duplicate camera id: " + cam.id);
+                }
+            }
+        } else {
+            // Legacy single-camera config: synthesize one camera entry.
+            CameraInstanceConfig cam;
+            cam.id = "cam1";
+            cam.name = "Camera 1";
+            cam.source = cfg.capture.source;
+            cam.simulation = cfg.capture.simulation;
+            cam.camera = cfg.capture.camera;
+            cam.motion.enabled = false; // Preserve old behavior: process everything.
+            cfg.cameras.push_back(std::move(cam));
+        }
         if (j.contains("processing")) readProcessing(j.at("processing"), cfg.processing);
         if (j.contains("network")) readNetwork(j.at("network"), cfg.network);
         if (j.contains("display")) readDisplay(j.at("display"), cfg.display);
+        if (j.contains("api")) {
+            readIfPresent(j.at("api"), "enabled", cfg.api.enabled);
+            readIfPresent(j.at("api"), "bind_address", cfg.api.bindAddress);
+            readIfPresent(j.at("api"), "port", cfg.api.port);
+        }
         return cfg;
     } catch (const json::exception& e) {
         throw std::runtime_error("config type error in " + path + ": " + e.what());

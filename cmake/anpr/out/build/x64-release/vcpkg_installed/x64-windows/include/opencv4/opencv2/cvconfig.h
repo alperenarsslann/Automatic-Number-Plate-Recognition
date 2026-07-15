@@ -93,8 +93,8 @@
 /* #undef HAVE_NVCUVENC */
 
 /* OpenCL Support */
-/* #undef HAVE_OPENCL */
-/* #undef HAVE_OPENCL_STATIC */
+#define HAVE_OPENCL
+#define HAVE_OPENCL_STATIC
 /* #undef HAVE_OPENCL_SVM */
 
 /* NVIDIA OpenCL D3D Extensions support */

@@ -183,7 +183,7 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config, vcpkg-get-python-packages, zlib
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 2a0704b4fef82d592b1f2b916c769b09acfe2faaf02dc3c25a2a910f843afdf9
+Abi: 4e77a822bd24813c2e8f82a1c2a3f96670e2aa09a9fe170f76c7109e5a4450aa
 Description: Open Source Computer Vision Library
 Default-Features: calib3d, directml, dnn, dshow, fs, gapi, highgui, intrinsics, jpeg, msmf, png, quirc, thread, tiff, webp, win32ui
 Status: install ok installed
@@ -314,5 +314,157 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: 609732e41aa3b0f6c0f5a677bf63eaf6b2cebec83dfc279215765a5a8ce5ba03
 Description: JSON for Modern C++
+Status: install ok installed
+
+Package: opencl
+Version: 2024.10.24
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: d4a22ed57e86f8e8efa113c7b19cf2323809dd4c31287120ca219efa8fb605da
+Description: OpenCL SDK
+Status: install ok installed
+
+Package: vcpkg-cmake-get-vars
+Version: 2025-05-29
+Depends: vcpkg-cmake
+Architecture: x64-windows
+Multi-Arch: same
+Abi: caa2151da55e6f802690e8f431117ab1ddf7ad3e4497dde2d14a90b83bbc2fb0
+Status: install ok installed
+
+Package: vcpkg-tool-meson
+Version: 1.9.0
+Port-Version: 4
+Depends: vcpkg-cmake-get-vars
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 671bbd0f15b7c0f2749b958093fa0f238fd6ee975a1e4b63cd5066dc2cfa054e
+Description: Meson build system
+Status: install ok installed
+
+Package: pkgconf
+Version: 2.5.1
+Port-Version: 4
+Depends: vcpkg-tool-meson
+Architecture: x64-windows
+Multi-Arch: same
+Abi: e60610c0a30230459b12447addf39d3948e3d3d116279f2430b109a7df59f5d6
+Description: pkgconf is a program which helps to configure compiler and linker flags for development libraries. It is similar to pkg-config from freedesktop.org.
+Status: install ok installed
+
+Package: vcpkg-pkgconfig-get-modules
+Version: 2024-04-03
+Depends: pkgconf
+Architecture: x64-windows
+Multi-Arch: same
+Abi: a24741f50a26c8f3b3d7e39dd4aca1cbe6428f8cedf4ca14e7262f29dafc1c1f
+Status: install ok installed
+
+Package: ffmpeg-bin2c
+Version: 8.0.1
+Depends: vcpkg-cmake
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 4e501ccf18f5b8b3bf6b9afc40ae4c96f3b318a6185b07f95fe64de880653bdb
+Description: Host tool bin2c for FFmpeg build
+Status: install ok installed
+
+Package: brotli
+Version: 1.2.0
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 5edb6e05c15a7ef0823147ed2cca563d19cfef4638bfd1876bc87733c2115e6c
+Description: a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling.
+Status: install ok installed
+
+Package: cpp-httplib
+Version: 0.37.1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: be9a619e07ec6cb8015f4200b0687294af502e77d5806080154d7a092d809f93
+Description: A single file C++11 header-only HTTP/HTTPS server and client library
+Default-Features: brotli
+Status: install ok installed
+
+Package: cpp-httplib
+Feature: brotli
+Depends: brotli
+Architecture: x64-windows
+Multi-Arch: same
+Description: Enables brotli compression support using brotli
+Status: install ok installed
+
+Package: ffmpeg
+Version: 8.0.1
+Port-Version: 2
+Depends: ffmpeg-bin2c, vcpkg-cmake-get-vars, vcpkg-pkgconfig-get-modules
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 32b93a68211202287e0feafb4d769f581a89441410f1a40b2cf468a5b0564758
+Description: A library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.
+    FFmpeg is the leading multimedia framework, able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created. It supports the most obscure ancient formats up to the cutting edge. No matter if they were designed by some standards committee, the community or a corporation. It is also highly portable: FFmpeg compiles, runs, and passes our testing infrastructure FATE across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc. under a wide variety of build environments, machine architectures, and configurations.
+Default-Features: avcodec, avdevice, avfilter, avformat, swresample, swscale
+Status: install ok installed
+
+Package: ffmpeg
+Feature: avcodec
+Architecture: x64-windows
+Multi-Arch: same
+Description: Build the avcodec library
+Status: install ok installed
+
+Package: ffmpeg
+Feature: avdevice
+Architecture: x64-windows
+Multi-Arch: same
+Description: Build the avdevice library
+Status: install ok installed
+
+Package: ffmpeg
+Feature: avfilter
+Architecture: x64-windows
+Multi-Arch: same
+Description: Build the avfilter library
+Status: install ok installed
+
+Package: ffmpeg
+Feature: avformat
+Architecture: x64-windows
+Multi-Arch: same
+Description: Build the avformat library
+Status: install ok installed
+
+Package: ffmpeg
+Feature: swresample
+Architecture: x64-windows
+Multi-Arch: same
+Description: Build the swresample library
+Status: install ok installed
+
+Package: ffmpeg
+Feature: swscale
+Architecture: x64-windows
+Multi-Arch: same
+Description: Build the swscale library
+Status: install ok installed
+
+Package: opencv4
+Feature: ffmpeg
+Depends: ffmpeg
+Architecture: x64-windows
+Multi-Arch: same
+Description: ffmpeg support for opencv
+Status: install ok installed
+
+Package: opencv4
+Feature: opencl
+Depends: opencl
+Architecture: x64-windows
+Multi-Arch: same
+Description: Enable opencl support
 Status: install ok installed
 

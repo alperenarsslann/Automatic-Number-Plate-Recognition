@@ -9,6 +9,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set_property(TARGET opencv_core APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(opencv_core PROPERTIES
   IMPORTED_IMPLIB_DEBUG "${_IMPORT_PREFIX}/debug/lib/opencv_core4d.lib"
+  IMPORTED_LINK_DEPENDENT_LIBRARIES_DEBUG "OpenCL::OpenCL"
   IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/debug/bin/opencv_core4d.dll"
   )
 

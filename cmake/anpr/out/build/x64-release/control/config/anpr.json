@@ -1,37 +1,69 @@
 {
   "version": 1,
-
   "logging": {
     "level": "info"
   },
 
-  "capture": {
-    "source": "simulation",
-    "queue_capacity": 8,
-    "simulation": {
-      "video_path": "C:\\Workspaces\\VisualStudio\\projects\\anpr\\docs\\dataset\\archive\\plates-video-dataset\\pexels-casey-whalen-6571483 (2160p).mp4",
-      "realtime": true,
-      "target_fps": 0,
-      "frame_skip": 0,
-      "loop": true,
-      "start_time_seconds": 0.0
-    },
-    "camera": {
-      "rtsp_url": "rtsp://user:password@192.168.1.64:554/Streaming/Channels/101",
-      "transport": "tcp",
-      "reconnect_interval_seconds": 5.0
+  "cameras": [
+    {
+      "id": "cam1",
+      "name": "Camera 1",
+      "enabled": true,
+      "alpr_enabled": true,
+      "source": "simulation",
+      "simulation": {
+        "video_path": "C:\\Workspaces\\VisualStudio\\projects\\anpr\\docs\\dataset\\archive\\plates-video-dataset\\Traffic Control CCTV.mp4",
+        "realtime": true,
+        "target_fps": 0,
+        "frame_skip": 0,
+        "loop": true,
+        "start_time_seconds": 0
+      },
+      "camera": {
+        "rtsp_url": "rtsp://user:password@192.168.1.64:554/Streaming/Channels/101",
+        "substream_url": "",
+        "transport": "tcp",
+        "reconnect_interval_seconds": 5.0
+      },
+      "motion": {
+        "enabled": true,
+        "downscale_width": 320,
+        "min_area_fraction": 0.005,
+        "cooldown_seconds": 2.0
+      }
     }
-  },
+  ],
 
   "processing": {
     "active_model_profile": "generic",
-    "dedup_window_seconds": 10.0,
+    "dedup_window_seconds": 10,
     "queue_capacity": 32,
     "process_every_n_frames": 3,
-    "num_threads": 0,
+    "num_threads": 4,
+    "max_frame_width": 1920,
+    "worker_count": 2,
     "model_profiles": {
       "generic": {
         "engine": "opencv_dnn",
+        "dnn_backend": "cuda",
+        "vehicle_detection": {
+          "enabled": true,
+          "model_path": "models/vehicle_detect_yolov8n_416.onnx",
+          "input_width": 416,
+          "input_height": 416,
+          "confidence_threshold": 0.6,
+          "nms_threshold": 0.45,
+          "class_ids": [2, 3, 5, 7],
+          "roi_expand": 0.15,
+          "preprocess": {
+            "color_order": "RGB",
+            "channels": 3,
+            "layout": "nchw",
+            "scale": 0.00392156862745098,
+            "mean": [0.0, 0.0, 0.0],
+            "std": [1.0, 1.0, 1.0]
+          }
+        },
         "detection": {
           "model_path": "models/plate_detect_yolov8n.onnx",
           "input_width": 640,
@@ -99,6 +131,12 @@
   "display": {
     "enabled": true,
     "max_width": 1280
+  },
+
+  "api": {
+    "enabled": true,
+    "bind_address": "127.0.0.1",
+    "port": 8088
   },
 
   "network": {

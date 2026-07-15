@@ -17,6 +17,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace anpr {
 
@@ -29,6 +30,27 @@ struct PreprocessConfig {
     double scale = 1.0 / 255.0;               ///< Pixel scale factor applied first.
     std::array<double, 3> mean = {0, 0, 0};   ///< Per-channel mean subtracted after scaling.
     std::array<double, 3> stddev = {1, 1, 1}; ///< Per-channel std divided after mean subtraction.
+};
+
+/**
+ * @brief Optional vehicle detection stage that runs BEFORE plate detection.
+ *
+ * When enabled, plates are searched only inside detected vehicle regions and
+ * at most one plate (the best candidate) is reported per vehicle. This kills
+ * false positives on background structures and stops one physical plate from
+ * being reported as several.
+ */
+struct VehicleModelConfig {
+    bool enabled = false;
+    std::string modelPath;              ///< COCO-style YOLO .onnx (or custom).
+    int inputWidth = 640;
+    int inputHeight = 640;
+    double confidenceThreshold = 0.4;
+    double nmsThreshold = 0.45;
+    std::vector<int> classIds = {2, 3, 5, 7}; ///< COCO: car, motorcycle, bus, truck.
+    double roiExpand = 0.15;            ///< Grow the vehicle box by this fraction
+                                        ///< before searching for the plate.
+    PreprocessConfig preprocess;
 };
 
 /// Plate detection model parameters.
@@ -60,6 +82,12 @@ struct OcrModelConfig {
  */
 struct ModelProfile {
     std::string engine = "opencv_dnn";  ///< Recognizer implementation to instantiate.
+    /// DNN compute backend: "cpu" (default), "opencl" / "opencl_fp16" (GPU via
+    /// OpenCL, works with stock OpenCV), "cuda" / "cuda_fp16" (requires an
+    /// OpenCV build with CUDA support). Unavailable backends fall back to CPU
+    /// with a warning instead of failing.
+    std::string dnnBackend = "cpu";
+    VehicleModelConfig vehicle;         ///< Optional vehicle-first stage.
     DetectionModelConfig detection;
     OcrModelConfig ocr;
 };
@@ -76,17 +104,55 @@ struct SimulationConfig {
 
 /// Real camera (RTSP) frame source settings.
 struct CameraConfig {
-    std::string rtspUrl;                ///< e.g. rtsp://user:pass@host:554/Streaming/Channels/101
+    std::string rtspUrl;                ///< Main stream, e.g. rtsp://user:pass@host:554/Streaming/Channels/101
+    std::string substreamUrl;           ///< Optional low-res substream (e.g. .../102). When set,
+                                        ///< analysis decodes this instead of the main stream —
+                                        ///< the standard NVR trick for high camera counts.
     std::string transport = "tcp";      ///< RTP transport: "tcp" or "udp".
     double reconnectIntervalSeconds = 5.0;
 };
 
-/// Capture layer settings.
+/**
+ * @brief Motion gating (Frigate-style): a very cheap background-subtraction
+ *        pass decides whether a frame is worth sending to the DNN pipeline.
+ *
+ * Static scenes then cost almost nothing: no vehicle/plate/OCR inference runs
+ * until pixels actually change. This is the single biggest CPU lever for
+ * always-on cameras.
+ */
+struct MotionConfig {
+    bool enabled = true;
+    int downscaleWidth = 320;           ///< Motion analysis resolution (grayscale).
+    double minAreaFraction = 0.005;     ///< Fraction of pixels that must change to count as motion.
+    double cooldownSeconds = 2.0;       ///< Keep processing this long after the last motion.
+};
+
+/// Capture layer settings (LEGACY single-camera block; still accepted and
+/// converted to a one-element camera list when "cameras" is absent).
 struct CaptureConfig {
     std::string source = "simulation";  ///< Active source: "simulation" or "camera".
     SimulationConfig simulation;
     CameraConfig camera;
     std::size_t queueCapacity = 8;      ///< Bounded frame queue toward processing.
+};
+
+/// One camera in the multi-camera pipeline (up to 64).
+struct CameraInstanceConfig {
+    std::string id;                     ///< Unique key, used in reports and the API.
+    std::string name;                   ///< Human-readable label for displays.
+    bool enabled = true;                ///< Camera runs at all.
+    bool alprEnabled = true;            ///< Plate recognition on/off (runtime-togglable via API/UI).
+    std::string source = "simulation";  ///< "simulation" or "camera".
+    SimulationConfig simulation;
+    CameraConfig camera;
+    MotionConfig motion;
+};
+
+/// Embedded REST API for status/control (per-camera ALPR toggles, plates feed).
+struct ApiConfig {
+    bool enabled = true;
+    std::string bindAddress = "127.0.0.1";
+    std::uint16_t port = 8088;
 };
 
 /// Processing layer settings.
@@ -99,12 +165,18 @@ struct ProcessingConfig {
     int numThreads = 0;                 ///< OpenCV thread cap; 0 = library default (all cores).
     int maxFrameWidth = 0;              ///< Downscale frames wider than this right after
                                         ///< capture (0 = off). Big CPU saver for 4K sources.
+    int workerCount = 2;                ///< ALPR worker threads shared by ALL cameras. Each
+                                        ///< worker owns its own model instances; cameras feed
+                                        ///< one bounded queue (drop-oldest), so N cameras never
+                                        ///< cost more inference CPU than workerCount allows.
 };
 
-/// Live display settings (development/verification aid).
+/// Live display settings: a grid wall of all enabled cameras (1x1 for a
+/// single camera, up to 8x8 for 64). Clicking a tile toggles that camera's
+/// ALPR on/off.
 struct DisplayConfig {
-    bool enabled = false;               ///< Show annotated video in a window.
-    int maxWidth = 1280;                ///< Downscale the window if wider than this.
+    bool enabled = false;               ///< Show the annotated camera grid window.
+    int maxWidth = 1280;                ///< Total window width; tiles share it.
 };
 
 /// Network layer settings.
@@ -125,10 +197,13 @@ struct LoggingConfig {
 struct AppConfig {
     int version = 1;                    ///< Config schema version.
     LoggingConfig logging;
-    CaptureConfig capture;
+    CaptureConfig capture;              ///< Legacy single-camera block (see cameras).
+    std::vector<CameraInstanceConfig> cameras; ///< Multi-camera list (max 64). When empty,
+                                               ///< synthesized from the legacy capture block.
     ProcessingConfig processing;
     NetworkConfig network;
     DisplayConfig display;
+    ApiConfig api;
 
     /**
      * @brief Load and validate a JSON config file.

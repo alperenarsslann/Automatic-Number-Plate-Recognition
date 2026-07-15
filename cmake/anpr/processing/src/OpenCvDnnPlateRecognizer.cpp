@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <fstream>
 
+#include <opencv2/core/ocl.hpp>
 #include <opencv2/imgproc.hpp>
 
 #include "core/Logger.h"
@@ -85,6 +86,39 @@ cv::Mat makeBlob(const cv::Mat& bgr, int dstW, int dstH, const PreprocessConfig&
 OpenCvDnnPlateRecognizer::OpenCvDnnPlateRecognizer(std::string profileName, ModelProfile profile)
     : profileName_(std::move(profileName)), profile_(std::move(profile)) {}
 
+void OpenCvDnnPlateRecognizer::applyBackend(cv::dnn::Net& net) const {
+    const std::string& backend = profile_.dnnBackend;
+    if (backend == "opencl" || backend == "opencl_fp16") {
+        if (!cv::ocl::haveOpenCL()) {
+            LOG_WARN(kComponent, "dnn_backend '", backend,
+                     "' requested but no OpenCL runtime found — falling back to CPU");
+            return;
+        }
+        net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
+        net.setPreferableTarget(backend == "opencl_fp16" ? cv::dnn::DNN_TARGET_OPENCL_FP16
+                                                         : cv::dnn::DNN_TARGET_OPENCL);
+        return;
+    }
+    if (backend == "cuda" || backend == "cuda_fp16") {
+        const auto backends = cv::dnn::getAvailableBackends();
+        const bool haveCuda =
+            std::any_of(backends.begin(), backends.end(), [](const auto& pair) {
+                return pair.first == cv::dnn::DNN_BACKEND_CUDA;
+            });
+        if (!haveCuda) {
+            LOG_WARN(kComponent, "dnn_backend '", backend,
+                     "' requested but this OpenCV build has no CUDA DNN backend — "
+                     "falling back to CPU (a custom OpenCV build with CUDA is required)");
+            return;
+        }
+        net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
+        net.setPreferableTarget(backend == "cuda_fp16" ? cv::dnn::DNN_TARGET_CUDA_FP16
+                                                       : cv::dnn::DNN_TARGET_CUDA);
+        return;
+    }
+    // "cpu": library default.
+}
+
 bool OpenCvDnnPlateRecognizer::initialize() {
     try {
         detectionNet_ = cv::dnn::readNetFromONNX(profile_.detection.modelPath);
@@ -99,6 +133,18 @@ bool OpenCvDnnPlateRecognizer::initialize() {
         lastError_ = "cannot load OCR model '" + profile_.ocr.modelPath + "': " + e.what();
         return false;
     }
+    if (profile_.vehicle.enabled) {
+        try {
+            vehicleNet_ = cv::dnn::readNetFromONNX(profile_.vehicle.modelPath);
+        } catch (const cv::Exception& e) {
+            lastError_ = "cannot load vehicle model '" + profile_.vehicle.modelPath +
+                         "': " + e.what();
+            return false;
+        }
+        applyBackend(vehicleNet_);
+    }
+    applyBackend(detectionNet_);
+    applyBackend(ocrNet_);
 
     std::ifstream charsetFile(profile_.ocr.charsetPath);
     if (!charsetFile) {
@@ -118,19 +164,21 @@ bool OpenCvDnnPlateRecognizer::initialize() {
 
     initialized_ = true;
     LOG_INFO(kComponent, "initialized profile '", profileName_,
-             "' (detector: ", profile_.detection.modelPath,
+             "' (backend: ", profile_.dnnBackend,
+             profile_.vehicle.enabled ? ", vehicle: " + profile_.vehicle.modelPath : "",
+             ", detector: ", profile_.detection.modelPath,
              ", ocr: ", profile_.ocr.modelPath, ", charset: ", charset_.size(), " symbols)");
     return true;
 }
 
-std::vector<OpenCvDnnPlateRecognizer::Candidate>
-OpenCvDnnPlateRecognizer::detectPlates(const cv::Mat& image) {
-    const auto& det = profile_.detection;
-
+std::vector<OpenCvDnnPlateRecognizer::Candidate> OpenCvDnnPlateRecognizer::runYoloDetection(
+    cv::dnn::Net& net, const cv::Mat& image, int inputWidth, int inputHeight,
+    const PreprocessConfig& preprocess, double confidenceThreshold, double nmsThreshold,
+    const std::vector<int>* classFilter) {
     Letterbox lb;
-    const cv::Mat boxed = letterboxImage(image, det.inputWidth, det.inputHeight, lb);
-    detectionNet_.setInput(makeBlob(boxed, det.inputWidth, det.inputHeight, det.preprocess));
-    cv::Mat out = detectionNet_.forward();
+    const cv::Mat boxed = letterboxImage(image, inputWidth, inputHeight, lb);
+    net.setInput(makeBlob(boxed, inputWidth, inputHeight, preprocess));
+    cv::Mat out = net.forward();
 
     // Accept [1, 4+nc, N] (YOLOv8 family) and [1, N, 4+nc] (YOLOv5 family).
     // The attribute axis is much smaller than the anchor axis, which makes
@@ -141,16 +189,31 @@ OpenCvDnnPlateRecognizer::detectPlates(const cv::Mat& image) {
         pred = pred.t(); // -> [N, 4+nc]
     }
 
+    const int numClasses = pred.cols - 4;
     std::vector<cv::Rect> boxes;
     std::vector<float> scores;
+    std::vector<int> classIds;
     for (int i = 0; i < pred.rows; ++i) {
         const float* row = pred.ptr<float>(i);
-        // Single-class models: row[4] is the score; multi-class: take the max.
-        float score = row[4];
-        for (int c = 5; c < pred.cols; ++c) {
-            score = std::max(score, row[c]);
+        // Best class among the allowed set (or all classes when unfiltered).
+        float score = -1.0f;
+        int classId = -1;
+        if (classFilter && !classFilter->empty()) {
+            for (const int c : *classFilter) {
+                if (c >= 0 && c < numClasses && row[4 + c] > score) {
+                    score = row[4 + c];
+                    classId = c;
+                }
+            }
+        } else {
+            for (int c = 0; c < numClasses; ++c) {
+                if (row[4 + c] > score) {
+                    score = row[4 + c];
+                    classId = c;
+                }
+            }
         }
-        if (score < static_cast<float>(det.confidenceThreshold)) {
+        if (score < static_cast<float>(confidenceThreshold)) {
             continue;
         }
         // cx, cy, w, h in letterboxed input pixels -> source pixels.
@@ -166,18 +229,63 @@ OpenCvDnnPlateRecognizer::detectPlates(const cv::Mat& image) {
         }
         boxes.push_back(clipped);
         scores.push_back(score);
+        classIds.push_back(classId);
     }
 
     std::vector<int> keep;
-    cv::dnn::NMSBoxes(boxes, scores, static_cast<float>(det.confidenceThreshold),
-                      static_cast<float>(det.nmsThreshold), keep);
+    cv::dnn::NMSBoxes(boxes, scores, static_cast<float>(confidenceThreshold),
+                      static_cast<float>(nmsThreshold), keep);
 
     std::vector<Candidate> result;
     result.reserve(keep.size());
     for (const int idx : keep) {
-        result.push_back({boxes[idx], scores[idx]});
+        result.push_back({boxes[idx], scores[idx], classIds[idx]});
     }
     return result;
+}
+
+std::vector<OpenCvDnnPlateRecognizer::Candidate>
+OpenCvDnnPlateRecognizer::detectPlates(const cv::Mat& image) {
+    const auto& det = profile_.detection;
+
+    if (!profile_.vehicle.enabled) {
+        return runYoloDetection(detectionNet_, image, det.inputWidth, det.inputHeight,
+                                det.preprocess, det.confidenceThreshold, det.nmsThreshold,
+                                nullptr);
+    }
+
+    // Vehicle-first: find vehicles, then search for exactly one plate inside
+    // each (expanded) vehicle region. Plates without a vehicle are ignored.
+    const auto& veh = profile_.vehicle;
+    const auto vehicles =
+        runYoloDetection(vehicleNet_, image, veh.inputWidth, veh.inputHeight, veh.preprocess,
+                         veh.confidenceThreshold, veh.nmsThreshold, &veh.classIds);
+    LOG_DEBUG(kComponent, vehicles.size(), " vehicle(s) in frame");
+
+    std::vector<Candidate> plates;
+    for (const Candidate& vehicle : vehicles) {
+        const int dx = static_cast<int>(vehicle.box.width * veh.roiExpand / 2);
+        const int dy = static_cast<int>(vehicle.box.height * veh.roiExpand / 2);
+        const cv::Rect roi = (vehicle.box + cv::Size(2 * dx, 2 * dy) - cv::Point(dx, dy)) &
+                             cv::Rect(0, 0, image.cols, image.rows);
+        if (roi.area() <= 0) {
+            continue;
+        }
+
+        auto candidates =
+            runYoloDetection(detectionNet_, image(roi), det.inputWidth, det.inputHeight,
+                             det.preprocess, det.confidenceThreshold, det.nmsThreshold, nullptr);
+        if (candidates.empty()) {
+            continue;
+        }
+        // One physical plate per vehicle: keep only the strongest candidate.
+        auto best = *std::max_element(
+            candidates.begin(), candidates.end(),
+            [](const Candidate& a, const Candidate& b) { return a.confidence < b.confidence; });
+        best.box += roi.tl(); // ROI-local -> frame coordinates.
+        plates.push_back(best);
+    }
+    return plates;
 }
 
 bool OpenCvDnnPlateRecognizer::readPlate(const cv::Mat& crop, std::string& text,

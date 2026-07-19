@@ -13,6 +13,7 @@ C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/processi
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/processing/CMakeFiles/test.dir
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/processing/CMakeFiles/edit_cache.dir
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/processing/CMakeFiles/rebuild_cache.dir
+C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/network/CMakeFiles/anpr_network.dir
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/network/CMakeFiles/test.dir
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/network/CMakeFiles/edit_cache.dir
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/network/CMakeFiles/rebuild_cache.dir
@@ -20,3 +21,7 @@ C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/control/
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/control/CMakeFiles/test.dir
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/control/CMakeFiles/edit_cache.dir
 C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/control/CMakeFiles/rebuild_cache.dir
+C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/tools/mock_server/CMakeFiles/mock_server.dir
+C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/tools/mock_server/CMakeFiles/test.dir
+C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/tools/mock_server/CMakeFiles/edit_cache.dir
+C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-debug/tools/mock_server/CMakeFiles/rebuild_cache.dir

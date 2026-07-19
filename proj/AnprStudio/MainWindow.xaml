@@ -66,9 +66,12 @@
                             <ListBox x:Name="CamerasList" Height="120"
                                      SelectionChanged="CamerasList_SelectionChanged"/>
                             <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
-                                <Button Content="+ Add" Width="60" Margin="0,0,6,0" Click="AddCamera_Click"/>
-                                <Button Content="- Remove" Width="70" Margin="0,0,6,0" Click="RemoveCamera_Click"/>
-                                <Button x:Name="LiveToggleButton" Content="ALPR live toggle" Width="120"
+                                <Button Content="+ Add" Width="52" Margin="0,0,6,0" Click="AddCamera_Click"/>
+                                <Button Content="- Remove" Width="66" Margin="0,0,6,0" Click="RemoveCamera_Click"/>
+                                <Button x:Name="DiscoverButton" Content="🔍 Discover" Width="86" Margin="0,0,6,0"
+                                        Click="Discover_Click"
+                                        ToolTip="Scan the LAN for Hikvision cameras (SADP + TCP fallback) and add them"/>
+                                <Button x:Name="LiveToggleButton" Content="ALPR toggle" Width="90"
                                         IsEnabled="False" Click="LiveToggleAlpr_Click"
                                         ToolTip="Toggle the selected camera's plate recognition while the pipeline is running (via REST API)"/>
                             </StackPanel>
@@ -167,6 +170,37 @@
                         </StackPanel>
                     </GroupBox>
 
+                    <GroupBox Header="Consolidation (one final result per plate)">
+                        <StackPanel>
+                            <CheckBox x:Name="ConsolEnabledCheck"
+                                      Content="Consolidate multiple reads into one final"
+                                      ToolTip="Groups jittery reads of the same plate and emits one voted result"/>
+                            <UniformGrid Columns="2">
+                                <StackPanel Margin="0,0,4,0">
+                                    <Label Content="Finalize after (s)"/>
+                                    <TextBox x:Name="ConsolFinalizeBox"
+                                             ToolTip="Idle time after the plate leaves before emitting the final result"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <Label Content="Min sightings"/>
+                                    <TextBox x:Name="ConsolMinSightBox"
+                                             ToolTip="Require this many reads before reporting a plate"/>
+                                </StackPanel>
+                            </UniformGrid>
+                            <UniformGrid Columns="2">
+                                <StackPanel Margin="0,0,4,0">
+                                    <Label Content="Max edit distance"/>
+                                    <TextBox x:Name="ConsolEditBox"
+                                             ToolTip="Group reads within this many character differences"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <Label Content="Max track (s)"/>
+                                    <TextBox x:Name="ConsolMaxTrackBox"/>
+                                </StackPanel>
+                            </UniformGrid>
+                        </StackPanel>
+                    </GroupBox>
+
                     <GroupBox Header="Display / API">
                         <StackPanel>
                             <CheckBox x:Name="DisplayCheck" Content="Show camera wall (click tile = toggle ALPR)"/>
@@ -181,6 +215,36 @@
                                 </StackPanel>
                             </UniformGrid>
                             <CheckBox x:Name="ApiEnabledCheck" Content="REST API enabled"/>
+                            <Label Content="API key (blank = no auth; first key from config)"/>
+                            <TextBox x:Name="ApiKeyBox"
+                                     ToolTip="Sent as X-API-Key on live status/snapshot/toggle calls. Must match one of api.api_keys."/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="Detection snapshots (verification JPGs)">
+                        <StackPanel>
+                            <CheckBox x:Name="DetOutEnabledCheck"
+                                      Content="Save an annotated JPG per reported plate"
+                                      ToolTip="One timestamped, plate-labeled image per final result"/>
+                            <Label Content="Output folder"/>
+                            <TextBox x:Name="DetOutDirBox"/>
+                            <CheckBox x:Name="DetOutTimestampCheck" Content="Burn timestamp banner"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="Network (site server uplink)">
+                        <StackPanel>
+                            <CheckBox x:Name="NetEnabledCheck" Content="Send plate reports to site server (TCP)"/>
+                            <UniformGrid Columns="2">
+                                <StackPanel Margin="0,0,4,0">
+                                    <Label Content="Server host"/>
+                                    <TextBox x:Name="NetHostBox"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <Label Content="Server port"/>
+                                    <TextBox x:Name="NetPortBox"/>
+                                </StackPanel>
+                            </UniformGrid>
                         </StackPanel>
                     </GroupBox>
 

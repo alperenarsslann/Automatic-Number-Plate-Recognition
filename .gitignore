@@ -78,3 +78,5 @@ x86/
 
 # docs
 docs/
+training/
+cmake/anpr/detections

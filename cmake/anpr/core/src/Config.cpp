@@ -136,14 +136,23 @@ void readCapture(const json& j, CaptureConfig& cfg) {
 
 void readProcessing(const json& j, ProcessingConfig& cfg) {
     readIfPresent(j, "active_model_profile", cfg.activeModelProfile);
+    if (j.contains("consolidation")) {
+        const auto& c = j.at("consolidation");
+        readIfPresent(c, "enabled", cfg.consolidation.enabled);
+        readIfPresent(c, "finalize_after_seconds", cfg.consolidation.finalizeAfterSeconds);
+        readIfPresent(c, "max_track_seconds", cfg.consolidation.maxTrackSeconds);
+        readIfPresent(c, "max_edit_distance", cfg.consolidation.maxEditDistance);
+        readIfPresent(c, "max_center_distance", cfg.consolidation.maxCenterDistance);
+        readIfPresent(c, "min_sightings", cfg.consolidation.minSightings);
+    }
     readIfPresent(j, "dedup_window_seconds", cfg.dedupWindowSeconds);
     readIfPresent(j, "queue_capacity", cfg.queueCapacity);
     readIfPresent(j, "process_every_n_frames", cfg.processEveryNFrames);
     readIfPresent(j, "num_threads", cfg.numThreads);
     readIfPresent(j, "max_frame_width", cfg.maxFrameWidth);
     readIfPresent(j, "worker_count", cfg.workerCount);
-    if (cfg.workerCount < 1 || cfg.workerCount > 16) {
-        throw std::runtime_error("processing.worker_count must be between 1 and 16");
+    if (cfg.workerCount < 0 || cfg.workerCount > 16) {
+        throw std::runtime_error("processing.worker_count must be between 0 (auto) and 16");
     }
     if (cfg.processEveryNFrames < 1) {
         throw std::runtime_error("processing.process_every_n_frames must be >= 1");
@@ -228,10 +237,18 @@ AppConfig AppConfig::loadFromFile(const std::string& path) {
         if (j.contains("processing")) readProcessing(j.at("processing"), cfg.processing);
         if (j.contains("network")) readNetwork(j.at("network"), cfg.network);
         if (j.contains("display")) readDisplay(j.at("display"), cfg.display);
+        if (j.contains("detection_output")) {
+            const auto& d = j.at("detection_output");
+            readIfPresent(d, "enabled", cfg.detectionOutput.enabled);
+            readIfPresent(d, "directory", cfg.detectionOutput.directory);
+            readIfPresent(d, "draw_timestamp", cfg.detectionOutput.drawTimestamp);
+            readIfPresent(d, "jpeg_quality", cfg.detectionOutput.jpegQuality);
+        }
         if (j.contains("api")) {
             readIfPresent(j.at("api"), "enabled", cfg.api.enabled);
             readIfPresent(j.at("api"), "bind_address", cfg.api.bindAddress);
             readIfPresent(j.at("api"), "port", cfg.api.port);
+            readIfPresent(j.at("api"), "api_keys", cfg.api.apiKeys);
         }
         return cfg;
     } catch (const json::exception& e) {

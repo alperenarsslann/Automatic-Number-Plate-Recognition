@@ -1,0 +1,649 @@
+{
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/CMakeFiles/4.2.1/CMakeSystem.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeDependentOption.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "C:/Program Files/Microsoft Visual Studio/18/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/cmake/Microsoft/SegmentHeap.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/Windows-Initialize.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/CMakeFiles/4.2.1/CMakeCXXCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/Windows.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/WindowsPaths.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCXXInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Compiler/MSVC-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Compiler/MSVC.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/Windows-MSVC-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/Windows-MSVC.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/CMakeFiles/4.2.1/CMakeRCCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeRCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Internal/CMakeCXXLinkerInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Internal/CMakeCommonLinkerInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Linker/MSVC-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Linker/MSVC.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/Linker/Windows-MSVC-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Platform/Linker/Windows-MSVC.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/opencv4/OpenCVConfig-version.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/opencv4/OpenCVConfig.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/opencv4/OpenCVModules.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindDependencyMacro.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/vcpkg-cmake-wrapper.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/protobuf-config-version.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/protobuf-config.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/protobuf-options.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/absl/abslConfigVersion.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/absl/abslConfig.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindDependencyMacro.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindThreads.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckLibraryExists.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckIncludeFileCXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckCXXSourceCompiles.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/Internal/CheckSourceCompiles.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/absl/abslTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/absl/abslTargets-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/absl/abslTargets-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/utf8_range/utf8_range-config.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/utf8_range/utf8_range-targets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/utf8_range/utf8_range-targets-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/utf8_range/utf8_range-targets-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/protobuf-targets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/protobuf-targets-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/protobuf-targets-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/protobuf-generate.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/protobuf/protobuf-module.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/SelectLibraryConfigurations.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindThreads.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckLibraryExists.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckIncludeFileCXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckCXXSourceCompiles.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/flatbuffers/flatbuffers-config-version.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/flatbuffers/flatbuffers-config.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/flatbuffers/FlatBuffersTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/flatbuffers/FlatBuffersTargets-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/flatbuffers/FlatBuffersTargets-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/flatbuffers/FlatcTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/flatbuffers/FlatcTargets-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/flatbuffers/BuildFlatBuffers.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/ffmpeg/vcpkg-cmake-wrapper.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/ffmpeg/FindFFMPEG.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/SelectLibraryConfigurations.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindDependencyMacro.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/SelectLibraryConfigurations.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPkgConfig.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/opencl/vcpkg-cmake-wrapper.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/opencl/OpenCLConfigVersion.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/opencl/OpenCLConfig.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLHeaders/OpenCLHeadersConfig.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLHeaders/OpenCLHeadersTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLICDLoader/OpenCLICDLoaderConfig.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLICDLoader/OpenCLICDLoaderTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLICDLoader/OpenCLICDLoaderTargets-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLICDLoader/OpenCLICDLoaderTargets-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLHeadersCpp/OpenCLHeadersCppConfig.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLHeadersCpp/OpenCLHeadersCppTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLUtils/OpenCLUtilsConfig.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLUtils/OpenCLUtilsTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLUtils/OpenCLUtilsTargets-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLUtils/OpenCLUtilsTargets-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLUtilsCpp/OpenCLUtilsCppConfig.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLUtilsCpp/OpenCLUtilsCppTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLUtilsCpp/OpenCLUtilsCppTargets-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/OpenCLUtilsCpp/OpenCLUtilsCppTargets-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/quirc/quirc-config.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/quirc/quirc-config-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/quirc/quirc-config-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/tiff/vcpkg-cmake-wrapper.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindTIFF.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/tiff/vcpkg-cmake-wrapper.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/SelectLibraryConfigurations.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/opencv4/OpenCVModules-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/opencv4/OpenCVModules-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/nlohmann_json/nlohmann_jsonConfigVersion.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/nlohmann_json/nlohmann_jsonConfig.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/nlohmann_json/nlohmann_jsonTargets.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/httplib/httplibConfigVersion.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/httplib/httplibConfig.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CMakeFindDependencyMacro.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/unofficial-brotli/unofficial-brotli-config.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/unofficial-brotli/unofficial-brotli-config-debug.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/unofficial-brotli/unofficial-brotli-config-release.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/x64-release/vcpkg_installed/x64-windows/share/httplib/httplibTargets.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindThreads.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckLibraryExists.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckIncludeFileCXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/CheckCXXSourceCompiles.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/CMake/share/cmake-4.2/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"path" : "vcpkg.json"
+		},
+		{
+			"path" : "core/CMakeLists.txt"
+		},
+		{
+			"path" : "capture/CMakeLists.txt"
+		},
+		{
+			"path" : "processing/CMakeLists.txt"
+		},
+		{
+			"path" : "network/CMakeLists.txt"
+		},
+		{
+			"path" : "control/CMakeLists.txt"
+		},
+		{
+			"path" : "tools/mock_server/CMakeLists.txt"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr/out/build/x64-release",
+		"source" : "C:/Workspaces/VisualStudio/projects/anpr/cmake/anpr"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 1
+	}
+}

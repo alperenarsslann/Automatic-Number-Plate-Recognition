@@ -1,11 +1,19 @@
 # Network / API layer: INetworkTransport implementations + message schema.
-# INTERFACE for now (headers only); becomes STATIC in step 4 when the TCP
-# transport and the mock test server are implemented.
-add_library(anpr_network INTERFACE)
+add_library(anpr_network STATIC
+    src/TcpNetworkTransport.cpp
+    src/MessageSchema.cpp
+    src/NetworkTransportFactory.cpp
+)
 
-target_include_directories(anpr_network INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(anpr_network PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(anpr_network
-    INTERFACE
+    PUBLIC
         anpr_core
+    PRIVATE
+        nlohmann_json::nlohmann_json
 )
+
+if (WIN32)
+    target_link_libraries(anpr_network PRIVATE ws2_32)
+endif()

@@ -4,6 +4,7 @@ add_library(anpr_processing STATIC
     src/OpenCvDnnPlateRecognizer.cpp
     src/PlateRecognizerFactory.cpp
     src/MotionGate.cpp
+    src/PlateTracker.cpp
 )
 
 target_include_directories(anpr_processing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

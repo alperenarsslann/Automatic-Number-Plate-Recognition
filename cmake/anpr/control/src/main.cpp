@@ -23,6 +23,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include "MultiCameraPipeline.h"
+#include "capture/HikvisionDiscovery.h"
 #include "core/Config.h"
 #include "core/Logger.h"
 #include "core/Types.h"
@@ -46,6 +47,7 @@ struct CliOptions {
     std::string videoPath;  ///< Overrides camera[0] simulation video when non-empty.
     std::string imagePath;  ///< One-shot mode: recognize a single image and exit.
     std::string display;    ///< "on"/"off" overrides display.enabled when non-empty.
+    bool discover = false;  ///< Scan the LAN for Hikvision cameras and exit.
     bool showHelp = false;
 };
 
@@ -58,6 +60,7 @@ void printUsage() {
         "  --image=<path>       One-shot: recognize a single image, save an\n"
         "                       annotated copy next to it, then exit\n"
         "  --display[=on|off]   Override the camera-wall display window\n"
+        "  --discover           Scan the LAN for Hikvision cameras (SADP) and exit\n"
         "  --log-level=<level>  Override log level: debug | info | warn | error\n"
         "  --help               Show this help\n"
         "\n"
@@ -82,6 +85,7 @@ CliOptions parseArgs(int argc, char** argv) {
         else if (key == "--video") opts.videoPath = value;
         else if (key == "--image") opts.imagePath = value;
         else if (key == "--display") opts.display = value.empty() ? "on" : value;
+        else if (key == "--discover") opts.discover = true;
         else if (key == "--log-level") opts.logLevel = value;
         else throw std::runtime_error("unknown option: " + arg);
     }
@@ -150,6 +154,36 @@ int runImageTest(const anpr::ProcessingConfig& processingConfig, const std::stri
 
 } // namespace
 
+/**
+ * @brief LAN scan mode: probe for Hikvision cameras via SADP and print them.
+ *
+ * Besides the human-readable table, each device is printed as a single
+ * machine-parsable "DISCOVERED ..." line consumed by AnprStudio.
+ */
+int runDiscovery() {
+    std::cout << "Scanning the local network for Hikvision cameras (SADP, 3 s)...\n";
+    std::string error;
+    const auto cameras = anpr::discoverHikvisionCameras(3.0, error);
+    if (!error.empty()) {
+        std::cerr << "Error: " << error << std::endl;
+        return 1;
+    }
+    if (cameras.empty()) {
+        std::cout << "No cameras answered. Check that the devices are powered, on the same\n"
+                     "subnet, and that the Windows firewall allows UDP replies (port 37020).\n";
+        return 0;
+    }
+    for (const auto& cam : cameras) {
+        std::cout << "DISCOVERED ip=" << cam.ipv4 << " http=" << cam.httpPort
+                  << " sdk=" << cam.sdkPort << " desc=" << cam.description
+                  << " serial=" << cam.serialNumber << " mac=" << cam.mac
+                  << " fw=" << cam.firmwareVersion << "\n";
+        std::cout << "  RTSP main stream: " << cam.mainStreamUrl() << "\n";
+    }
+    std::cout << cameras.size() << " camera(s) found.\n";
+    return 0;
+}
+
 int main(int argc, char** argv) {
     CliOptions opts;
     try {
@@ -162,6 +196,9 @@ int main(int argc, char** argv) {
     if (opts.showHelp) {
         printUsage();
         return 0;
+    }
+    if (opts.discover) {
+        return runDiscovery();
     }
 
     anpr::AppConfig config;
@@ -186,11 +223,11 @@ int main(int argc, char** argv) {
     // real problems still surface as warnings/errors.
     cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_WARNING);
 
-    // Cap OpenCV's internal parallelism (decode + DNN) when configured;
-    // 0 keeps the library default (all cores).
-    if (config.processing.numThreads > 0) {
+    // For one-shot --image, cap OpenCV threads directly when configured; the
+    // multi-camera pipeline manages this itself (auto-balances against the
+    // ALPR worker count), so we leave it alone in that path.
+    if (!opts.imagePath.empty() && config.processing.numThreads > 0) {
         cv::setNumThreads(config.processing.numThreads);
-        LOG_INFO(kComponent, "OpenCV thread cap: ", config.processing.numThreads);
     }
 
     std::signal(SIGINT, signalHandler);

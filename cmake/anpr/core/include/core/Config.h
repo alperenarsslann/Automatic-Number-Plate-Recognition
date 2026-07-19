@@ -151,24 +151,51 @@ struct CameraInstanceConfig {
 /// Embedded REST API for status/control (per-camera ALPR toggles, plates feed).
 struct ApiConfig {
     bool enabled = true;
-    std::string bindAddress = "127.0.0.1";
+    std::string bindAddress = "127.0.0.1"; ///< "0.0.0.0" to serve other hosts (then set apiKeys!).
     std::uint16_t port = 8088;
+    /// Accepted API keys. When empty, the API is UNAUTHENTICATED (fine for a
+    /// localhost dev bind). When non-empty, every request must present a valid
+    /// key via `X-API-Key: <key>` or `Authorization: Bearer <key>`.
+    std::vector<std::string> apiKeys;
+};
+
+/**
+ * @brief Temporal consolidation ("one final result per plate").
+ *
+ * A passing vehicle yields many noisy OCR reads of the SAME plate across
+ * frames (e.g. K619879 / 1619879 / V619879). Instead of reporting each,
+ * readings are grouped into a track and, once the plate leaves view, a
+ * single consolidated result is emitted via per-character confidence voting.
+ */
+struct ConsolidationConfig {
+    bool enabled = true;
+    double finalizeAfterSeconds = 1.5;  ///< Idle time before a track is finalized/reported.
+    double maxTrackSeconds = 10.0;      ///< Safety cap: finalize even if still visible.
+    int maxEditDistance = 2;            ///< Group readings within this edit distance.
+    double maxCenterDistance = 0.2;     ///< ...and whose boxes are within this fraction
+                                        ///< of the frame diagonal (spatial gate).
+    int minSightings = 2;               ///< Require at least this many reads to report.
 };
 
 /// Processing layer settings.
 struct ProcessingConfig {
     std::string activeModelProfile = "generic"; ///< Key into modelProfiles.
     std::map<std::string, ModelProfile> modelProfiles;
-    double dedupWindowSeconds = 10.0;   ///< Same plate re-reported only after this window.
+    ConsolidationConfig consolidation;
+    double dedupWindowSeconds = 10.0;   ///< Same plate re-reported only after this window
+                                        ///< (fallback path when consolidation is disabled).
     std::size_t queueCapacity = 32;     ///< Bounded detection queue toward network.
     int processEveryNFrames = 1;        ///< Run ALPR on every Nth frame (CPU relief).
-    int numThreads = 0;                 ///< OpenCV thread cap; 0 = library default (all cores).
+    int numThreads = 0;                 ///< OpenCV threads PER inference. 0 = auto-balance so
+                                        ///< workerCount * threads ~= CPU cores (avoids the
+                                        ///< oversubscription that wastes CPU); >0 = fixed cap.
     int maxFrameWidth = 0;              ///< Downscale frames wider than this right after
                                         ///< capture (0 = off). Big CPU saver for 4K sources.
-    int workerCount = 2;                ///< ALPR worker threads shared by ALL cameras. Each
+    int workerCount = 0;                ///< ALPR worker threads shared by ALL cameras. Each
                                         ///< worker owns its own model instances; cameras feed
                                         ///< one bounded queue (drop-oldest), so N cameras never
                                         ///< cost more inference CPU than workerCount allows.
+                                        ///< 0 = auto (derived from CPU cores).
 };
 
 /// Live display settings: a grid wall of all enabled cameras (1x1 for a
@@ -177,6 +204,15 @@ struct ProcessingConfig {
 struct DisplayConfig {
     bool enabled = false;               ///< Show the annotated camera grid window.
     int maxWidth = 1280;                ///< Total window width; tiles share it.
+};
+
+/// Save an annotated JPG for every reported (consolidated) plate — a visual
+/// verification record. One image per final result, not per raw frame.
+struct DetectionOutputConfig {
+    bool enabled = false;               ///< Master on/off.
+    std::string directory = "detections"; ///< Output folder (created if missing).
+    bool drawTimestamp = true;          ///< Burn a timestamp banner into the image.
+    int jpegQuality = 90;               ///< 1..100.
 };
 
 /// Network layer settings.
@@ -203,6 +239,7 @@ struct AppConfig {
     ProcessingConfig processing;
     NetworkConfig network;
     DisplayConfig display;
+    DetectionOutputConfig detectionOutput;
     ApiConfig api;
 
     /**

@@ -311,6 +311,14 @@ public partial class MainWindow : Window
         ThreadsBox.Text = NumText(proc["num_threads"], "0");
         MaxFrameWidthBox.Text = NumText(proc["max_frame_width"], "0");
         WorkerCountBox.Text = NumText(proc["worker_count"], "2");
+
+        var consol = proc["consolidation"];
+        ConsolEnabledCheck.IsChecked = consol?["enabled"]?.GetValue<bool>() ?? true;
+        ConsolFinalizeBox.Text = NumText(consol?["finalize_after_seconds"], "1.5");
+        ConsolMinSightBox.Text = NumText(consol?["min_sightings"], "2");
+        ConsolEditBox.Text = NumText(consol?["max_edit_distance"], "2");
+        ConsolMaxTrackBox.Text = NumText(consol?["max_track_seconds"], "10");
+
         ProfileToUi();
 
         var display = Node("display");
@@ -320,6 +328,19 @@ public partial class MainWindow : Window
         var api = Node("api");
         ApiEnabledCheck.IsChecked = api["enabled"]?.GetValue<bool>() ?? true;
         ApiPortBox.Text = NumText(api["port"], "8088");
+        var keys = api["api_keys"] as JsonArray;
+        ApiKeyBox.Text = (keys != null && keys.Count > 0) ? keys[0]!.GetValue<string>() : "";
+        ApplyApiKey();
+
+        var detOut = Node("detection_output");
+        DetOutEnabledCheck.IsChecked = detOut["enabled"]?.GetValue<bool>() ?? false;
+        DetOutDirBox.Text = detOut["directory"]?.GetValue<string>() ?? "detections";
+        DetOutTimestampCheck.IsChecked = detOut["draw_timestamp"]?.GetValue<bool>() ?? true;
+
+        var net = Node("network");
+        NetEnabledCheck.IsChecked = net["enabled"]?.GetValue<bool>() ?? false;
+        NetHostBox.Text = net["server_host"]?.GetValue<string>() ?? "127.0.0.1";
+        NetPortBox.Text = NumText(net["server_port"], "9000");
 
         SelectComboText(LogLevelCombo, Node("logging")["level"]?.GetValue<string>() ?? "info");
     }
@@ -363,6 +384,13 @@ public partial class MainWindow : Window
         proc["max_frame_width"] = ParseInt(MaxFrameWidthBox.Text, "Max frame width");
         proc["worker_count"] = ParseInt(WorkerCountBox.Text, "ALPR workers");
 
+        var consol = (JsonObject)(proc["consolidation"] ??= new JsonObject());
+        consol["enabled"] = ConsolEnabledCheck.IsChecked == true;
+        consol["finalize_after_seconds"] = ParseDouble(ConsolFinalizeBox.Text, "Finalize after");
+        consol["min_sightings"] = ParseInt(ConsolMinSightBox.Text, "Min sightings");
+        consol["max_edit_distance"] = ParseInt(ConsolEditBox.Text, "Max edit distance");
+        consol["max_track_seconds"] = ParseDouble(ConsolMaxTrackBox.Text, "Max track");
+
         var display = Node("display");
         display["enabled"] = DisplayCheck.IsChecked == true;
         display["max_width"] = ParseInt(MaxWidthBox.Text, "Wall width");
@@ -370,6 +398,21 @@ public partial class MainWindow : Window
         var api = Node("api");
         api["enabled"] = ApiEnabledCheck.IsChecked == true;
         api["port"] = ParseInt(ApiPortBox.Text, "API port");
+        var apiKey = ApiKeyBox.Text.Trim();
+        api["api_keys"] = string.IsNullOrEmpty(apiKey)
+            ? new JsonArray()
+            : new JsonArray(JsonValue.Create(apiKey)!);
+        ApplyApiKey();
+
+        var detOut = Node("detection_output");
+        detOut["enabled"] = DetOutEnabledCheck.IsChecked == true;
+        detOut["directory"] = DetOutDirBox.Text;
+        detOut["draw_timestamp"] = DetOutTimestampCheck.IsChecked == true;
+
+        var net = Node("network");
+        net["enabled"] = NetEnabledCheck.IsChecked == true;
+        net["server_host"] = NetHostBox.Text;
+        net["server_port"] = ParseInt(NetPortBox.Text, "Server port");
 
         Node("logging")["level"] = ComboText(LogLevelCombo);
     }
@@ -478,9 +521,114 @@ public partial class MainWindow : Window
         RebuildWall();
     }
 
+    // Pipeline prints one "DISCOVERED ip=... desc=... serial=..." line per device.
+    private static readonly Regex DiscoverRegex = new(
+        @"DISCOVERED ip=(?<ip>\S+).*?desc=(?<desc>.*?)(?:\s+serial=(?<serial>\S+))?(?:\s+mac=|\s*$)",
+        RegexOptions.Compiled);
+
+    /// <summary>Run `anpr.exe --discover`, list found cameras, add the chosen ones.</summary>
+    private async void Discover_Click(object sender, RoutedEventArgs e)
+    {
+        if (_config == null) return;
+        if (!File.Exists(ExePathBox.Text))
+        {
+            MessageBox.Show(this, "anpr.exe not found:\n" + ExePathBox.Text, "Cannot discover",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        DiscoverButton.IsEnabled = false;
+        StatusText.Text = "Scanning the LAN for cameras...";
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = ExePathBox.Text,
+                Arguments = "--discover",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+            using var proc = Process.Start(psi)!;
+            var stdout = await proc.StandardOutput.ReadToEndAsync();
+            await proc.WaitForExitAsync();
+
+            var found = new List<(string Ip, string Desc, string Serial)>();
+            foreach (Match m in DiscoverRegex.Matches(stdout))
+            {
+                found.Add((m.Groups["ip"].Value, m.Groups["desc"].Value.Trim(),
+                           m.Groups["serial"].Value));
+            }
+
+            if (found.Count == 0)
+            {
+                MessageBox.Show(this,
+                    "No cameras found.\n\nCheck that the devices are powered and on the same " +
+                    "subnet. SADP replies may be blocked by the firewall; the TCP fallback scan " +
+                    "needs ports 8000/554 reachable.",
+                    "Discovery", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var existing = Cameras().Select(c => c!["camera"]?["rtsp_url"]?.GetValue<string>() ?? "")
+                                    .ToList();
+            var added = 0;
+            foreach (var (ip, desc, _) in found)
+            {
+                if (existing.Any(u => u.Contains(ip))) continue; // Already configured.
+                var url = $"rtsp://admin:<password>@{ip}:554/Streaming/Channels/101";
+                Cameras().Add(new JsonObject
+                {
+                    ["id"] = $"cam{Cameras().Count + 1}",
+                    ["name"] = string.IsNullOrEmpty(desc) ? ip : desc,
+                    ["enabled"] = true,
+                    ["alpr_enabled"] = true,
+                    ["source"] = "camera",
+                    ["camera"] = new JsonObject
+                    {
+                        ["rtsp_url"] = url,
+                        ["substream_url"] = "",
+                        ["transport"] = "tcp",
+                        ["reconnect_interval_seconds"] = 5.0,
+                    },
+                    ["motion"] = new JsonObject { ["enabled"] = true, ["cooldown_seconds"] = 2.0 },
+                });
+                added++;
+            }
+
+            RefreshCameraList(keepSelection: false);
+            RebuildWall();
+            MessageBox.Show(this,
+                $"Found {found.Count} camera(s), added {added} new.\n\n" +
+                "Set each camera's RTSP password (the URL has a <password> placeholder), " +
+                "then Save Config.",
+                "Discovery", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Discovery error", MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+        finally
+        {
+            DiscoverButton.IsEnabled = true;
+            StatusText.Text = _process == null ? "Stopped" : StatusText.Text;
+        }
+    }
+
     // -------------------------------------------------------------------- api
 
     private int ApiPort() => int.TryParse(ApiPortBox.Text, out var p) ? p : 8088;
+
+    /// <summary>Attach (or clear) the X-API-Key header used for all live API
+    /// calls, matching what the running pipeline expects.</summary>
+    private void ApplyApiKey()
+    {
+        Http.DefaultRequestHeaders.Remove("X-API-Key");
+        var key = ApiKeyBox.Text.Trim();
+        if (!string.IsNullOrEmpty(key)) Http.DefaultRequestHeaders.Add("X-API-Key", key);
+    }
 
     private async Task PollApiAsync()
     {
@@ -547,6 +695,7 @@ public partial class MainWindow : Window
     private void Start_Click(object sender, RoutedEventArgs e)
     {
         if (_process != null) return;
+        ApplyApiKey(); // Live calls must carry the current key even if unsaved.
         if (!File.Exists(ExePathBox.Text))
         {
             MessageBox.Show(this, "anpr.exe not found:\n" + ExePathBox.Text, "Cannot start",

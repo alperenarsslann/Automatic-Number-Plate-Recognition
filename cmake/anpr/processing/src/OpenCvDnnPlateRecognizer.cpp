@@ -1,6 +1,7 @@
 #include "processing/OpenCvDnnPlateRecognizer.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 
 #include <opencv2/core/ocl.hpp>
@@ -120,6 +121,23 @@ void OpenCvDnnPlateRecognizer::applyBackend(cv::dnn::Net& net) const {
 }
 
 bool OpenCvDnnPlateRecognizer::initialize() {
+    // Pre-flight existence check so a mis-set profile / missing model gives a
+    // one-line reason instead of a deep OpenCV stack trace.
+    const auto requireFile = [this](const std::string& path, const char* what) {
+        if (path.empty() || !std::filesystem::exists(path)) {
+            lastError_ = std::string(what) + " not found: '" + path +
+                         "' (check processing.active_model_profile and the model_path in that "
+                         "profile — the file must exist relative to the working directory)";
+            return false;
+        }
+        return true;
+    };
+    if (!requireFile(profile_.detection.modelPath, "detection model")) return false;
+    if (!requireFile(profile_.ocr.modelPath, "OCR model")) return false;
+    if (profile_.vehicle.enabled && !requireFile(profile_.vehicle.modelPath, "vehicle model")) {
+        return false;
+    }
+
     try {
         detectionNet_ = cv::dnn::readNetFromONNX(profile_.detection.modelPath);
     } catch (const cv::Exception& e) {

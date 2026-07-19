@@ -2,6 +2,7 @@
 add_library(anpr_capture STATIC
     src/SimulatedFileFrameSource.cpp
     src/HikvisionRtspFrameSource.cpp
+    src/HikvisionDiscovery.cpp
     src/FrameSourceFactory.cpp
 )
 
@@ -13,3 +14,7 @@ target_link_libraries(anpr_capture
     PRIVATE
         opencv_videoio
 )
+
+if (WIN32)
+    target_link_libraries(anpr_capture PRIVATE ws2_32 iphlpapi)
+endif()

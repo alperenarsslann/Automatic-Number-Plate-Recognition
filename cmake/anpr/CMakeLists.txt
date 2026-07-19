@@ -33,5 +33,6 @@ add_subdirectory(capture)
 add_subdirectory(processing)
 add_subdirectory(network)
 add_subdirectory(control)
+add_subdirectory(tools/mock_server)
 
 enable_testing()

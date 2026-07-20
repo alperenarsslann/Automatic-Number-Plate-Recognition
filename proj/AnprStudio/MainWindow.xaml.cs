@@ -70,6 +70,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        TrySetWindowIcon();
         PlatesGrid.ItemsSource = _plates;
 
         _logFlushTimer = new DispatcherTimer(DispatcherPriority.Background)
@@ -95,6 +96,25 @@ public partial class MainWindow : Window
 
         GuessDefaultPaths();
         TryLoadConfig(silent: true);
+    }
+
+    /// <summary>
+    /// Set the window title-bar/taskbar icon from the embedded PNG resource.
+    /// A .ico set directly in XAML crashed WPF on PNG-compressed icon frames,
+    /// so we load a plain PNG in code and never let a failure take down startup
+    /// (the exe still carries the .ico via ApplicationIcon regardless).
+    /// </summary>
+    private void TrySetWindowIcon()
+    {
+        try
+        {
+            Icon = new System.Windows.Media.Imaging.BitmapImage(
+                new Uri("pack://application:,,,/app.png"));
+        }
+        catch
+        {
+            // Non-fatal: WPF falls back to the exe icon.
+        }
     }
 
     // ------------------------------------------------------------------- wall

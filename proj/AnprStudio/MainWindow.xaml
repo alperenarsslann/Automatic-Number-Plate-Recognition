@@ -132,9 +132,9 @@
                                     <TextBox x:Name="VehicleConfBox"/>
                                 </StackPanel>
                                 <StackPanel>
-                                    <Label Content="ALPR workers"/>
+                                    <Label Content="ALPR workers (0 = auto)"/>
                                     <TextBox x:Name="WorkerCountBox"
-                                             ToolTip="Shared inference threads for ALL cameras — caps total DNN CPU"/>
+                                             ToolTip="Shared inference workers for ALL cameras. 0 = auto: scales with camera count and balances OpenCV threads against CPU cores to avoid oversubscription."/>
                                 </StackPanel>
                             </UniformGrid>
                             <UniformGrid Columns="3">

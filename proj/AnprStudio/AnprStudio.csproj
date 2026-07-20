@@ -8,6 +8,14 @@
     <UseWPF>true</UseWPF>
     <AssemblyTitle>ANPR Studio</AssemblyTitle>
     <Description>Test and configuration companion for the ANPR embedded pipeline.</Description>
+    <!-- Embeds the icon into AnprStudio.exe (Explorer, taskbar, shortcuts). -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- PNG for the running window's title-bar/taskbar icon (WPF decodes PNG
+         reliably; the .ico is only used for the exe via ApplicationIcon). -->
+    <Resource Include="app.png" />
+  </ItemGroup>
 
 </Project>

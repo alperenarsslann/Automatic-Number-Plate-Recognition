@@ -1,0 +1,10 @@
+# Turkish plate ANPR fine-tuning toolchain.
+# Install into a venv:  python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt
+# For GPU training install the CUDA build of torch first (see README).
+ultralytics>=8.3.0        # YOLO detection fine-tune + ONNX export
+onnx>=1.16.0
+onnxruntime>=1.18.0
+opencv-python>=4.9.0
+numpy>=1.26.0
+pyyaml>=6.0
+fast-plate-ocr>=1.0.0     # optional: OCR fine-tuning (see train_ocr.py)

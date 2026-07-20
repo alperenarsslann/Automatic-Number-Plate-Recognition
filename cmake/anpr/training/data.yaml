@@ -1,0 +1,16 @@
+# YOLO dataset config for Turkish plate DETECTION fine-tuning.
+# Point train/val at folders that follow the YOLO layout:
+#   dataset/
+#     images/train/*.jpg   images/val/*.jpg
+#     labels/train/*.txt   labels/val/*.txt   (one line per plate: "0 cx cy w h", normalized)
+#
+# prepare_dataset.py can bootstrap weak labels for you (see README).
+
+path: dataset          # root, relative to this file (or an absolute path)
+train: images/train
+val: images/val
+
+# Single class: the license plate. (Vehicle detection stays a separate,
+# generic COCO model in the C++ pipeline — we only fine-tune plate detection.)
+names:
+  0: plate

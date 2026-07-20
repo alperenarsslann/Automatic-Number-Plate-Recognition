@@ -1,0 +1,53 @@
+name: build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  studio:
+    name: ANPR Studio (.NET)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build AnprStudio
+        run: dotnet build proj/AnprStudio -c Release --nologo
+
+  pipeline:
+    name: ANPR pipeline (C++ / vcpkg)
+    runs-on: windows-latest
+    env:
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg_cache
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: '4b77da7fed37817f124936239197833469f1b9a8'
+
+      # OpenCV from source is slow on the first run; the binary cache makes
+      # subsequent runs fast.
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('cmake/anpr/vcpkg.json') }}
+
+      - name: Configure & build
+        working-directory: cmake/anpr
+        run: |
+          mkdir -Force ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          cmake --preset x64-release
+          cmake --build out/build/x64-release
+        shell: pwsh
+
+      - name: Smoke test (--help)
+        working-directory: cmake/anpr
+        run: out/build/x64-release/control/anpr.exe --help
+        shell: pwsh

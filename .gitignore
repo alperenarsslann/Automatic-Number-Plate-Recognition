@@ -1,82 +1,74 @@
-### C++
-# Object files
+# ── Build output ────────────────────────────────────────────────────────
+# CMake / Ninja / vcpkg build tree
+**/out/
+**/vcpkg_installed/
+**/vcpkg-manifest-install.log
+CMakeCache.txt
+CMakeFiles/
+
+# .NET / WPF (AnprStudio)
+[Bb]in/
+[Oo]bj/
+*.user
+
+# Object / library / executable artifacts
 *.o
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Dynamic libraries
+*.a
+*.lib
 *.so
 *.dylib
 *.dll
-
-# Static libraries
-*.a
-*.lib
-
-# Executables
 *.exe
 *.out
-
-# Linker output
 *.ilk
-*.map
-*.exp
-
-# Debug files
-*.dSYM/
-*.idb
 *.pdb
+*.idb
+*.exp
+*.gch
+*.pch
 
-### Windows
-# Windows thumbnail cache files
+# ── Large / generated assets (distributed via Releases, not git) ─────────
+# ONNX models & training weights — fetch with models/prepare_models.py
+*.onnx
+*.pt
+*.engine
+
+# Runtime detection snapshots
+**/detections/
+
+# Installer build output
+installer/staging/
+installer/dist/
+
+# ── Local datasets & vendor SDK (never published) ───────────────────────
+# Root docs/ holds the multi-GB datasets and the proprietary Hikvision SDK.
+# (The project's own docs live in cmake/anpr/docs and ARE tracked.)
+/docs/
+
+# ── Python training environment & data ──────────────────────────────────
+cmake/anpr/training/.venv*/
+cmake/anpr/training/runs/
+cmake/anpr/training/dataset/
+cmake/anpr/training/raw_images/
+cmake/anpr/training/plate_crops/
+cmake/anpr/training/wandb/
+__pycache__/
+*.pyc
+
+# ── Local / secret configuration ────────────────────────────────────────
+# Copy config/anpr.example.json to config/anpr.json and add real credentials.
+cmake/anpr/config/anpr.local.json
+
+# ── Editor / OS ─────────────────────────────────────────────────────────
+.vs/
+.vscode/
+*.suo
 Thumbs.db
-
-# Folder config file
 [Dd]esktop.ini
-
-# Recycle Bin used on file shares
 $RECYCLE.BIN/
-
-# Windows shortcuts
 *.lnk
 
-### VisualStudio
-# User-specific files
-*.suo
-*.user
-
-# Build results
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-[Bb]in/
-[Oo]bj/
-
-# Visual Studio cache/options directory
-.vs/
-
-# MSTest test Results
-[Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
-
-# NuGet
-*.nupkg
-**/[Pp]ackages/*
-!**/[Pp]ackages/build/
-*.nuget.props
-*.nuget.targets
-
-# Publish Web Output
-*.[Pp]ublish.xml
-
-# docs
-docs/
-training/
-cmake/anpr/detections
+# Local configs with real credentials / machine paths (use anpr.example.json as template)
+cmake/anpr/config/anpr.json
+cmake/anpr/config/demo-8cam.json

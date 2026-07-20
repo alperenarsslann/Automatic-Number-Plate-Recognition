@@ -1,0 +1,10 @@
+# Turkish plate DETECTION dataset (Roboflow "License Plates of Vehicles in
+# Turkey" v1, YOLOv8 format). Ready to train — no preparation needed.
+# 3150 train / 345 val images, single class.
+path: C:/Workspaces/VisualStudio/projects/anpr/docs/dataset/archive/License Plates of Vehicles in Turkey.v1i.yolov8
+train: train/images
+val: valid/images
+test: test/images
+
+names:
+  0: plate

@@ -22,32 +22,35 @@ jobs:
     name: ANPR pipeline (C++ / vcpkg)
     runs-on: windows-latest
     env:
-      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg_cache
+      # vcpkg binary cache -> GitHub Actions cache. The first run builds
+      # OpenCV (with ffmpeg + opencl) from source and is slow (~1h); after
+      # that the archives are restored from cache and the build is quick.
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}\vcpkg_bincache
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up vcpkg
-        uses: lukka/run-vcpkg@v11
-        with:
-          vcpkgGitCommitId: '4b77da7fed37817f124936239197833469f1b9a8'
-
-      # OpenCV from source is slow on the first run; the binary cache makes
-      # subsequent runs fast.
       - name: Cache vcpkg binaries
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-${{ runner.os }}-${{ hashFiles('cmake/anpr/vcpkg.json') }}
 
-      - name: Configure & build
+      # The presets use the Ninja + cl.exe toolchain, which needs the MSVC
+      # developer environment on PATH.
+      - name: Set up MSVC (cl.exe)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure & build (Release)
         working-directory: cmake/anpr
+        shell: pwsh
         run: |
-          mkdir -Force ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          New-Item -ItemType Directory -Force $env:VCPKG_DEFAULT_BINARY_CACHE | Out-Null
           cmake --preset x64-release
           cmake --build out/build/x64-release
-        shell: pwsh
 
       - name: Smoke test (--help)
         working-directory: cmake/anpr
-        run: out/build/x64-release/control/anpr.exe --help
         shell: pwsh
+        run: out/build/x64-release/control/anpr.exe --help
